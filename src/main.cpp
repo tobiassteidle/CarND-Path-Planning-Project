@@ -203,7 +203,7 @@ int main() {
   }
 
   // Initialize Car
-  Car car(49.5, 1);
+  Car car(0, 1);
   
   h.onMessage([&car, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -244,11 +244,38 @@ int main() {
           
             int prev_size = previous_path_x.size();
 
-          	json msgJson;
-          
-            vector<double> next_x_vals;
-            vector<double> next_y_vals;
+            if(prev_size > 0) {
+              car_s = end_path_s;
+            }
 
+            bool too_close = false;
+          
+            for(int i = 0; i < sensor_fusion.size(); i++) {
+              // car is in my lane
+              float d = sensor_fusion[i][6];
+              if(d < (2 + 4 * car.lane + 2) && d > (2 + 4 * car.lane - 2)) {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(vx * vx + vy * vy);
+                double check_car_s = sensor_fusion[i][5];
+                
+                check_car_s += ((double)prev_size * .02 * check_speed);
+                
+                if((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+                  
+                  //car.reference_velocity = 29.5;
+                  too_close = true;
+                }
+              }
+            }
+          
+            // Break and accelerate smoothly
+            if(too_close) {
+              car.reference_velocity -= .224;
+            } else if(car.reference_velocity < 49.5) {
+              car.reference_velocity += .224;
+            }
+          
  
 /*
             // Drive forward (Keep the Line)
@@ -325,6 +352,9 @@ int main() {
             tk::spline s;
             s.set_points(ptsx, ptsy);
           
+            vector<double> next_x_vals;
+            vector<double> next_y_vals;
+          
             // start with previous path points from last time
             for(int i = 0; i < previous_path_x.size(); i++) {
               next_x_vals.push_back(previous_path_x[i]);
@@ -379,8 +409,8 @@ int main() {
             /*
 ["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates.
              */
+            json msgJson;
           
-
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
           	msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
