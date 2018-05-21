@@ -4,6 +4,9 @@ Self-Driving Car Engineer Nanodegree Program
 ## Video
 [![MPC](http://img.youtube.com/vi/e103ScHK6bw/0.jpg)](http://www.youtube.com/watch?v=e103ScHK6bw "Path Planning")
 
+## Images
+![35 miles](../images/35miles.jpg)
+
 ## Rubric points
 ### Criteria:
 -	The car is able to drive at least 4.32 miles without incident.
