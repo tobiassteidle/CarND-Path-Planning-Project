@@ -15,11 +15,11 @@ Self-Driving Car Engineer Nanodegree Program
 
 
 
-### 1. Prediction [line 255 to line 290](./src/Car.cpp#L255)
+### 1. Prediction [method prediction()](./src/Car.cpp#L30)
 
-### 2. Behavior
+### 2. Behavior [method prediction_and_behavior()](./src/Car.cpp#L66)
 
-### 3. Trajectory
+### 3. Trajectory [Lines 255-354()](./src/main.cpp#L255)
 
 
 ## Dependencies
