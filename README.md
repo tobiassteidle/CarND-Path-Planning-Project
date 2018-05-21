@@ -5,7 +5,7 @@ Self-Driving Car Engineer Nanodegree Program
 [![MPC](http://img.youtube.com/vi/e103ScHK6bw/0.jpg)](http://www.youtube.com/watch?v=e103ScHK6bw "Path Planning")
 
 ## Images
-![35 miles](../images/35miles.jpg)
+![35 miles](images/35miles.jpg)
 
 ## Rubric points
 ### Criteria:
