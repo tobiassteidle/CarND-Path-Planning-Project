@@ -2,10 +2,10 @@
 Self-Driving Car Engineer Nanodegree Program
   
 ## Video
-[![MPC](http://img.youtube.com/vi/H5Z6NXRMo2s/0.jpg)](http://www.youtube.com/watch?v=H5Z6NXRMo2s "MPC")
+[![MPC](http://img.youtube.com/vi/H5Z6NXRMo2s/0.jpg)](http://www.youtube.com/watch?v=H5Z6NXRMo2s "Path Planning")
 
 ## Rubric points
-### 1. Prediction [line 255 to line 290](./src/main.cpp#L255)
+### 1. Prediction [line 255 to line 290](./src/Car.cpp#L255)
 
 ### 2. Behavior
 
