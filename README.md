@@ -5,6 +5,16 @@ Self-Driving Car Engineer Nanodegree Program
 [![MPC](http://img.youtube.com/vi/H5Z6NXRMo2s/0.jpg)](http://www.youtube.com/watch?v=H5Z6NXRMo2s "Path Planning")
 
 ## Rubric points
+### Criteria:
+-	The car is able to drive at least 4.32 miles without incident.
+-	The car drives according to the speed limit.
+-	Max Acceleration and Jerk are not Exceeded.
+-	Car does not have collisions.
+-	The car stays in its lane, except for the time between changing lanes.
+-	The car is able to change lanes
+
+
+
 ### 1. Prediction [line 255 to line 290](./src/Car.cpp#L255)
 
 ### 2. Behavior
