@@ -27,7 +27,7 @@ Lane Car::lane_for_d(const int d) {
   return UNKNOWN;
 }
 
-target_info Car::update_target_info(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion) {
+target_info Car::prediction(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion) {
   target_info info;
   info.left = false;
   info.ahead = false;
@@ -63,8 +63,8 @@ target_info Car::update_target_info(int prev_size, double car_s, const vector<ve
   return info;
 }
 
-void Car::update_lane(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion) {
-  target_info target = this->update_target_info(prev_size, car_s, sensor_fusion);
+void Car::prediction_and_behavior(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion) {
+  target_info target = this->prediction(prev_size, car_s, sensor_fusion);
   
   this->speed_difference = 0;
   

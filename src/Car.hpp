@@ -31,12 +31,12 @@ class Car {
     double speed_difference;
   
     Lane lane_for_d(const int d);
-    target_info update_target_info(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion);
+    target_info prediction(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion);
   
   public:
     Car();
   
-    void update_lane(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion);
+    void prediction_and_behavior(int prev_size, double car_s, const vector<vector<double>>& sensor_fusion);
     void update_veclocity();
   
     Lane lane;

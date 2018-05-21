@@ -248,8 +248,8 @@ int main() {
               car_s = end_path_s;
             }
             
-            // update lane position
-            car.update_lane(prev_size, car_s, sensor_fusion);
+            // prediction and behavior
+            car.prediction_and_behavior(prev_size, car_s, sensor_fusion);
           
             // list of widely spaced (x,y) waypoints, evenly spaced at 30m
             vector<double> ptsx;
