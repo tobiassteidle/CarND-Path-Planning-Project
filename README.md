@@ -20,7 +20,7 @@ Self-Driving Car Engineer Nanodegree Program
 ### 2. Behavior [method prediction_and_behavior()](./src/Car.cpp#L66)
 
 ### 3. Trajectory [Lines 255-354()](./src/main.cpp#L255)
-
+The trajectory is generated in the manner described in the „Walkthrough and Q&A“ Video.
 
 ## Dependencies
 
