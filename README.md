@@ -7,6 +7,7 @@ Self-Driving Car Engineer Nanodegree Program
 ## Images
 ![35 miles](images/35miles.jpg)
 ![42 miles](images/42miles.png)
+![108 miles](images/108miles.jpg)
 
 ## Rubric points
 ### Criteria:
