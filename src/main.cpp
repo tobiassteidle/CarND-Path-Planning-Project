@@ -247,49 +247,67 @@ int main() {
             if(prev_size > 0) {
               car_s = end_path_s;
             }
-
-            bool too_close = false;
+          
+            bool target_left = false;
+            bool target_ahead = false;
+            bool target_right = false;
           
             for(int i = 0; i < sensor_fusion.size(); i++) {
-              // car is in my lane
               float d = sensor_fusion[i][6];
-              if(d < (2 + 4 * car.lane + 2) && d > (2 + 4 * car.lane - 2)) {
-                double vx = sensor_fusion[i][3];
-                double vy = sensor_fusion[i][4];
-                double check_speed = sqrt(vx * vx + vy * vy);
-                double check_car_s = sensor_fusion[i][5];
-                
-                check_car_s += ((double)prev_size * .02 * check_speed);
-                
-                if((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-                  
-                  //car.reference_velocity = 29.5;
-                  too_close = true;
-                }
+              double vx = sensor_fusion[i][3];
+              double vy = sensor_fusion[i][4];
+              double check_speed = sqrt(vx * vx + vy * vy);
+              double check_car_s = sensor_fusion[i][5];
+              
+              check_car_s += ((double)prev_size * .02 * check_speed);
+              
+              int target_lane = -1;
+              if(d > 0 && d < 4) {
+                target_lane = 0;
+              } else if(d > 4 && d < 8) {
+                target_lane = 1;
+              } else if(d > 8 && d < 12) {
+                target_lane = 2;
+              }
+              
+              // not in valid line
+              if(target_lane < 0) {
+                continue;
+              }
+              
+              if(target_lane == car.lane) {
+                target_ahead |= check_car_s > car_s && check_car_s - car_s < 30;
+              } else if(target_lane - car.lane == -1) {
+                target_left |= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
+              } else if(target_lane - car.lane == 1) {
+                target_right |= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
               }
             }
           
-            // Break and accelerate smoothly
-            if(too_close) {
-              car.reference_velocity -= .224;
-            } else if(car.reference_velocity < 49.5) {
-              car.reference_velocity += .224;
-            }
+            // State Machine
+            const double MAX_SPEED = 49.5;
+            const double MAX_ACC = .224;
           
- 
-/*
-            // Drive forward (Keep the Line)
-            double dist_inc = 0.5;
-            for(int i = 0; i < 50; i++) {
-              double next_s = car_s + (i + 1) * dist_inc;
-              double next_d = 6;
+            double speed_diff = 0;
+            if(target_ahead) {
+              if(!target_left && car.lane > 0) {
+                car.lane--;
+              } else if(!target_right && car.lane != 2) {
+                car.lane++;
+              } else {
+                speed_diff -= MAX_ACC;
+              }
+            } else {
+              if(car.lane != 1) {
+                if((car.lane == 0 && !target_right) || (car.lane == 2 && !target_left)) {
+                  car.lane = 1;
+                }
+              }
               
-              vector<double> xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-              
-              next_x_vals.push_back(xy[0]);
-              next_y_vals.push_back(xy[1]);
+              if(car.reference_velocity < MAX_SPEED) {
+                car.reference_velocity += MAX_ACC;
+              }
             }
-          */
           
             // list of widely spaced (x,y) waypoints, evenly spaced at 30m
             vector<double> ptsx;
@@ -326,7 +344,6 @@ int main() {
           
             // add evenly 30m spaced points ahead of starting reference
             const double wp_d = 2 + 4 * car.lane;
-          
             vector<double> next_wp0 = getXY(car_s + 30, wp_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp1 = getXY(car_s + 60, wp_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp2 = getXY(car_s + 90, wp_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -361,7 +378,7 @@ int main() {
               next_y_vals.push_back(previous_path_y[i]);
             }
           
-            // calculate how to break up spline points so that we tratvel at our desired reference velocity
+            // calculate how to break up spline points so that we travel at our desired reference velocity
             double target_x = 30.0;
             double target_y = s(target_x);
             double target_dist = sqrt((target_x) * (target_x) + (target_y) * (target_y));
@@ -370,6 +387,15 @@ int main() {
           
             // Fill up the rest of out path planer after fillig it with previous points
             for(int i = 1; i <= 50 - previous_path_x.size(); i++) {
+              
+              // accelerate and break
+              car.reference_velocity += speed_diff;
+              if(car.reference_velocity > MAX_SPEED) {
+                car.reference_velocity = MAX_SPEED;
+              } else if(car.reference_velocity < MAX_ACC) {
+                car.reference_velocity = MAX_ACC;
+              }
+              
               double N = (target_dist / (.02 * car.reference_velocity / 2.24));
               double x_point = x_add_on + (target_x) / N;
               double y_point = s(x_point);
@@ -390,25 +416,6 @@ int main() {
               next_y_vals.push_back(y_point);
             }
           
-         
-          
-            /*
-            // Get Sensor Fusidon data
-            for(int k = 0; k < sensor_fusion.size(); k++) {
-              int target_id = sensor_fusion[k][0];
-              double target_x = sensor_fusion[k][1];
-              double target_y = sensor_fusion[k][2];
-              double target_xv = sensor_fusion[k][3];
-              double target_yv = sensor_fusion[k][4];
-              
-              double target_s = sensor_fusion[k][5];
-              double target_d = sensor_fusion[k][6];
-            }
-          */
-          
-            /*
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates.
-             */
             json msgJson;
           
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
